@@ -1,33 +1,49 @@
-import { useState } from "react";
+import { useState, useRef, useEffect } from "react";
+import data from "../data/pixels";
+import Color from "./Color";
 
 export default function Canvas() {
-	const [pixel, setPixel] = useState([]);
+	const [pixel, setPixel] = useState(data);
+	const [selectedColor, setSelectedColor] = useState("black");
+	const canvasRef = useRef(null);
+
+	const hw = 5;
+
+	useEffect(() => {
+		//Our first draw
+		const canvas = canvasRef.current;
+		const ctx = canvas.getContext("2d");
+		pixel.forEach(({ x, y, color }) => {
+			ctx.fillStyle = color;
+			ctx.fillRect(x, y, hw, hw);
+		});
+
+		console.log(pixel);
+	}, [pixel]);
+
+	const getMousePos = (event, color) => {
+		const canvas = canvasRef.current;
+		const rect = canvas.getBoundingClientRect();
+		const x = event.clientX - rect.left - hw * 2;
+		const y = event.clientY - rect.top - hw * 2;
+		return { x: Math.ceil(x / hw) * hw, y: Math.ceil(y / hw) * hw, color };
+	};
+
+	// Ready, set, go
 	return (
-		<div className="grid overflow-auto relative">
-			<div
+		<div className="h-screen overflow-hidden">
+			<canvas
 				onClick={(e) => {
-					console.log(e.clientX / 10, e.clientY / 10);
-					setPixel([
-						...pixel,
-						{
-							x: Math.floor(e.clientX / 10) * 10,
-							y: Math.floor(e.clientY / 10) * 10,
-							color: "bg-slate-700",
-						},
-					]);
+					setPixel(() => {
+						return [...pixel, getMousePos(e, selectedColor)];
+					});
 				}}
-				className="h-[1000px] w-[1000px] border m-10"
-			>
-				{pixel.map(({ x, y, color }) => (
-					<div
-						style={{
-							top: y,
-							left: x,
-						}}
-						className={`absolute ${color} h-[10px] w-[10px]`}
-					></div>
-				))}
-			</div>
+				className="border-4"
+				ref={canvasRef}
+				height="1000px"
+				width="1000px"
+			></canvas>
+			<Color setSelectedColor={setSelectedColor} />
 		</div>
 	);
 }

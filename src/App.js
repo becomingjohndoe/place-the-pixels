@@ -5,9 +5,8 @@ import Color from "./components/Color";
 
 function App() {
 	return (
-		<div className="App">
+		<div className="App  grid grid-rows-2 gap-0 h-screen w-screen">
 			<Canvas />
-			<Color />
 		</div>
 	);
 }

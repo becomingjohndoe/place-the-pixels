@@ -139,8 +139,8 @@ export default function Canvas() {
 				limitToBounds={false}
 				wheel={{ step: 0.03 }}
 				panning={{ velocityDisabled: true }}
-				initialPositionX={-250}
-				initialPositionY={-500}
+				initialPositionX={-1700}
+				initialPositionY={-1700}
 			>
 				<TransformComponent>
 					<SelectBox getMousePos={getMousePos} xy={xy} />

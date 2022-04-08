@@ -3,27 +3,41 @@ import { TransformWrapper, TransformComponent } from "react-zoom-pan-pinch";
 import data from "../data/pixels";
 import Color from "./Color";
 import SelectBox from "./SelectBox";
-
+import place from "../data/place.png";
 export default function Canvas() {
-	const [pixel, setPixel] = useState(data);
+	const [pixel, setPixel] = useState([]);
 	const [selectedColor, setSelectedColor] = useState("black");
 	const [scale, setScale] = useState(1.5);
-	const [xy, setXY] = useState({ x: 0, y: 0, color: "black" });
+	const [xy, setXY] = useState([
+		["x", 0],
+		["y", 0],
+	]);
 	const canvasRef = useRef(null);
 
-	const hw = 10;
+	const hw = 2;
 
 	useEffect(() => {
 		//Our first draw
 		const canvas = canvasRef.current;
 		const ctx = canvas.getContext("2d");
+
 		pixel.forEach(({ x, y, color }) => {
 			ctx.fillStyle = color;
 			ctx.fillRect(x, y, hw, hw);
 		});
 		// fillCanvas();
-		// console.log(pixel);
+		console.log(pixel);
 	}, [pixel]);
+
+	useEffect(() => {
+		const canvas = canvasRef.current;
+		const ctx = canvas.getContext("2d");
+		const base_img = new Image();
+		base_img.src = place;
+		base_img.onload = () => {
+			ctx.drawImage(base_img, 0, 0);
+		};
+	}, []);
 
 	const getMousePos = (event, color) => {
 		const canvas = canvasRef.current;
@@ -31,8 +45,8 @@ export default function Canvas() {
 		const x = event.clientX - rect.left;
 		const y = event.clientY - rect.top;
 		return {
-			x: Math.floor(x / (hw * scale)) * hw,
-			y: Math.ceil(y / (hw * scale)) * hw - hw,
+			x: Math.floor(x / (hw * scale)) * hw - hw,
+			y: Math.floor(y / (hw * scale)) * hw - hw,
 			color,
 		};
 	};
@@ -67,43 +81,42 @@ export default function Canvas() {
 				});
 			}
 		}
-		// console.log(coords);
+		setPixel(coords);
 	};
 	// Ready, set, go
 	return (
 		<div
 			onKeyDown={(e) => {
-				console.log("keydown", e.key);
-
+				e.preventDefault();
 				// add pixel
 				if (e.key === "Enter") {
 					setPixel(() => {
-						return [...pixel, xy];
+						return [...pixel, { ...xy, color: selectedColor }];
 					});
 				}
 				switch (e.key) {
 					case "ArrowUp":
 						setXY({
 							...xy,
-							y: xy.y - 10,
+							y: xy.y - 2,
 						});
 						break;
 					case "ArrowDown":
 						setXY({
 							...xy,
-							y: xy.y + 10,
+							y: xy.y + 2,
 						});
 						break;
 					case "ArrowLeft":
 						setXY({
 							...xy,
-							x: xy.x - 10,
+							x: xy.x - 2,
 						});
 						break;
 					case "ArrowRight":
 						setXY({
 							...xy,
-							x: xy.x + 10,
+							x: xy.x + 2,
 						});
 
 						break;
@@ -137,8 +150,8 @@ export default function Canvas() {
 						}}
 						className="border-4 m-10"
 						ref={canvasRef}
-						height="1000px"
-						width="1000px"
+						height="4000px"
+						width="4000px"
 						style={{ imageRendering: "pixelated" }}
 					></canvas>
 				</TransformComponent>

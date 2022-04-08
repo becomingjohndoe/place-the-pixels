@@ -5,7 +5,7 @@ import Color from "./components/Color";
 
 function App() {
 	return (
-		<div className="App  grid grid-rows-2 gap-0 h-screen w-screen">
+		<div className="App justify-center grid grid-rows-2 gap-0 w-screen h-screen">
 			<Canvas />
 		</div>
 	);
